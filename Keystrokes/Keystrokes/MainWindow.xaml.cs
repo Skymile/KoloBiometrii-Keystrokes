@@ -29,23 +29,28 @@ namespace Keystrokes
             this.Output.Focus();
         }
 
-        private void Save_Click(object sender, RoutedEventArgs e)
-        {
+        private void Save_Click(object sender, RoutedEventArgs e) => 
             this.Input.Text = string.Join("\n", this.keystrokes);
-        }
 
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
-
+            this.keystrokes.Clear();
+            this.Output.Text = "";
         }
 
-        private void Output_KeyDown(object sender, KeyEventArgs e)
+        private bool IsCaps(Key key) =>
+            key == Key.LeftShift || key == Key.RightShift || key == Key.CapsLock;
+
+        private void Output_KeyDown(object sender, KeyEventArgs e) => 
+            InternalKeyDown(IsCaps(e.Key) ? this.ShiftKey : this.NormalKey);
+
+        private static void InternalKeyDown((bool isReleased, int dwellTime, Stopwatch sw) key)
         {
-            if (this.isReleased)
+            if (key.isReleased)
             {
-                this.isReleased = false;
-                this.dwellTime = (int)this.sw.ElapsedMilliseconds;
-                this.sw = Stopwatch.StartNew();
+                key.isReleased = false;
+                key.dwellTime = (int)key.sw.ElapsedMilliseconds;
+                key.sw = Stopwatch.StartNew();
             }
         }
 
@@ -72,23 +77,25 @@ namespace Keystrokes
             }
         }
 
-        private void Output_KeyUp(object sender, KeyEventArgs e)
+        private void Output_KeyUp(object sender, KeyEventArgs e) => 
+            InternalKeyUp(e, IsCaps(e.Key) ? this.ShiftKey : this.NormalKey);
+
+        private void InternalKeyUp(KeyEventArgs e, (bool isReleased, int dwellTime, Stopwatch sw) key)
         {
-            this.isReleased = true;
+            key.isReleased = true;
 
             this.keystrokes.Add(new Keystroke(
-                this.dwellTime, 
-                (int)this.sw.ElapsedMilliseconds, 
+                key.dwellTime,
+                (int)key.sw.ElapsedMilliseconds,
                 KeyToString(e.Key))
             );
 
-            this.sw = Stopwatch.StartNew();
+            key.sw = Stopwatch.StartNew();
         }
 
-        private bool isReleased = true;
-        private int dwellTime = 0;
+        private (bool isReleased, int dwellTime, Stopwatch sw) NormalKey = (false, 0, Stopwatch.StartNew());
+        private (bool isReleased, int dwellTime, Stopwatch sw) ShiftKey  = (false, 0, Stopwatch.StartNew());
 
         private List<Keystroke> keystrokes = new List<Keystroke>();
-        private Stopwatch sw = Stopwatch.StartNew();
     }
 }
