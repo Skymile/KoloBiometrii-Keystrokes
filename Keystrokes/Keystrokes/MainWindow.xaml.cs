@@ -27,8 +27,6 @@ namespace Keystrokes
             this.Output.Text = "";
         }
 
-        public void A(int a) => a = 4;
-
         private bool IsCaps(Key key) =>
             key == Key.LeftShift || key == Key.RightShift || key == Key.CapsLock;
 
