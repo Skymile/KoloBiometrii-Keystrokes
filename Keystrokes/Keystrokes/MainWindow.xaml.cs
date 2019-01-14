@@ -27,13 +27,20 @@ namespace Keystrokes
             this.Output.Text = "";
         }
 
+        public void A(int a) => a = 4;
+
         private bool IsCaps(Key key) =>
             key == Key.LeftShift || key == Key.RightShift || key == Key.CapsLock;
 
-        private void Output_KeyDown(object sender, KeyEventArgs e) => 
-            InternalKeyDown(IsCaps(e.Key) ? this.ShiftKey : this.NormalKey);
-
-        private static void InternalKeyDown((bool isReleased, int dwellTime, Stopwatch sw) key)
+        private void Output_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (IsCaps(e.Key))
+                InternalKeyDown(ref this.ShiftKey);
+            else
+                InternalKeyDown(ref this.NormalKey);
+        }
+        
+        private static void InternalKeyDown(ref (bool isReleased, int dwellTime, Stopwatch sw) key)
         {
             if (key.isReleased)
             {
@@ -66,8 +73,13 @@ namespace Keystrokes
             }
         }
 
-        private void Output_KeyUp(object sender, KeyEventArgs e) => 
-            InternalKeyUp(e, IsCaps(e.Key) ? this.ShiftKey : this.NormalKey);
+        private void Output_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (IsCaps(e.Key))
+                InternalKeyUp(e, this.ShiftKey);
+            else
+                InternalKeyUp(e, this.NormalKey);
+        }
 
         private void InternalKeyUp(KeyEventArgs e, (bool isReleased, int dwellTime, Stopwatch sw) key)
         {
