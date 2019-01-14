@@ -50,7 +50,7 @@ namespace Classifier
         private static List<(int Id, List<Keystroke>)> GetSamples_2(
                 string directory,
                 string pattern
-            ) =>
+        ) =>
             (from file in Directory.GetFiles(directory, pattern)
              select (
                  int.Parse(
@@ -62,7 +62,32 @@ namespace Classifier
                      where !string.IsNullOrWhiteSpace(line)
                      select Keystroke.FromString(line)
                  ).ToList()
-            )).ToList()
+            )).ToList();
+
+        private static List<(int Id, List<Keystroke>)> GetSamples_3(
+            string directory,
+            string pattern
+        ) =>
+            Directory.GetFiles(directory, pattern)
+                .Select(ToPair)
+                .Select(i => (
+                    i.Id,
+                    File.ReadLines(i.file)
+                        .Where(IsValid)
+                        .Select(Keystroke.FromString)
+                        .ToList()
+                )).ToList();
+
+        private static bool IsValid(string line) =>
+            !string.IsNullOrWhiteSpace(line);
+
+        private static (int Id, string file) ToPair(string file) => (
+            int.Parse(
+                Path.GetFileNameWithoutExtension(file)
+                    .Substring(1, 2)
+            ),
+            file
+        );
 
         private List<(int Id, List<Keystroke> Keystrokes)> Samples;
     }
