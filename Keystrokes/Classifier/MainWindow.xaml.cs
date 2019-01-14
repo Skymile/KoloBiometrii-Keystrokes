@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using Keystrokes;
 
@@ -45,6 +46,23 @@ namespace Classifier
 
             return samples;
         }
+
+        private static List<(int Id, List<Keystroke>)> GetSamples_2(
+                string directory,
+                string pattern
+            ) =>
+            (from file in Directory.GetFiles(directory, pattern)
+             select (
+                 int.Parse(
+                     Path.GetFileNameWithoutExtension(file)
+                         .Substring(1, 2)
+                 ),
+                 (
+                     from line in File.ReadLines(file)
+                     where !string.IsNullOrWhiteSpace(line)
+                     select Keystroke.FromString(line)
+                 ).ToList()
+            )).ToList()
 
         private List<(int Id, List<Keystroke> Keystrokes)> Samples;
     }
