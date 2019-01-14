@@ -67,6 +67,9 @@ namespace Keystrokes
                 case Key.CapsLock:
                     return "CapsLock";
 
+                case Key.Space:
+                    return "Space";
+
                 default: return "Undefined";
             }
         }
@@ -74,12 +77,12 @@ namespace Keystrokes
         private void Output_KeyUp(object sender, KeyEventArgs e)
         {
             if (IsCaps(e.Key))
-                InternalKeyUp(e, this.ShiftKey);
+                InternalKeyUp(e, ref this.ShiftKey);
             else
-                InternalKeyUp(e, this.NormalKey);
+                InternalKeyUp(e, ref this.NormalKey);
         }
 
-        private void InternalKeyUp(KeyEventArgs e, (bool isReleased, int dwellTime, Stopwatch sw) key)
+        private void InternalKeyUp(KeyEventArgs e, ref (bool isReleased, int dwellTime, Stopwatch sw) key)
         {
             key.isReleased = true;
 
