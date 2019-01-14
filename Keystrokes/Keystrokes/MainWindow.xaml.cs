@@ -14,7 +14,7 @@ namespace Keystrokes
         {
             InitializeComponent();
 
-            this.Input.Text = "Apollo 11 was the spaceflight that landed the first two people on the Moon Armstrong became the first person to step onto the lunar surface six hours after landing on July 21 Aldrin joined him about 20 minutes later";
+            this.Input.Text = "Apollo 11 was the spaceflight that landed the first two people on the Moon Armstrong became the first person to step onto the lunar surface six hours after landing on July 21 Aldrin joined him 20 minutes later";
             this.Output.Focus();
         }
 
